@@ -1,5 +1,6 @@
 import asyncio
 import os
+import secrets
 import socket
 import subprocess
 import traceback
@@ -13,12 +14,12 @@ std_out_file = open(Path(decky_plugin.DECKY_PLUGIN_LOG_DIR) / "std-out.log", "w"
 std_err_file = open(Path(decky_plugin.DECKY_PLUGIN_LOG_DIR) / "std-err.log", "w")
 
 COPYPARTY_PORT = 3923
-DEFAULT_PASSWORD = "ChangeMe!plz"
+ALPHANUM = "abcdefghijklmnopqrstuvwxyz0123456789"
 
 
 class Plugin:
     _enabled = False
-    _password = DEFAULT_PASSWORD
+    _password: str | None = None
     _proc: subprocess.Popen | None = None
     _runner_task: asyncio.Task | None = None
 
@@ -35,8 +36,14 @@ class Plugin:
             return None
 
     @staticmethod
+    def _generate_password():
+        return "".join(secrets.choice(ALPHANUM) for _ in range(6))
+
+    @staticmethod
     def _build_command():
         # Grant deck user full rw/delete over /home/deck
+        if not Plugin._password:
+            Plugin._password = Plugin._generate_password()
         auth_arg = f"deck:{Plugin._password}"
         return [
             "sudo",
@@ -80,25 +87,21 @@ class Plugin:
 
     async def set_enabled(self, enabled):
         logger.info(f"Set enabled: {enabled}")
+        if enabled:
+            Plugin._password = Plugin._generate_password()
+            Plugin._stop_process()  # ensure restart with fresh password
+        else:
+            Plugin._stop_process()
         Plugin._enabled = enabled
-        if not enabled:
-            Plugin._stop_process()
-
-    async def set_password(self, password: str):
-        logger.info("Updating Copyparty password")
-        Plugin._password = password or DEFAULT_PASSWORD
-        # Restart server with the new password if already running
-        if Plugin._enabled:
-            Plugin._stop_process()
 
     async def get_status(self):
         url = None
         ip = self._get_local_ip()
         if Plugin._enabled and ip:
-            url = f"http(s)://{ip}:{COPYPARTY_PORT}"
+            url = f"http://{ip}:{COPYPARTY_PORT}"
         return {
             "enabled": Plugin._enabled,
-            "password": Plugin._password,
+            "password": Plugin._password if Plugin._enabled else None,
             "url": url,
         }
 
