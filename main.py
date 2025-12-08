@@ -5,6 +5,7 @@ import socket
 import subprocess
 import traceback
 from pathlib import Path
+import sys
 
 import decky_plugin
 
@@ -15,6 +16,7 @@ std_err_file = open(Path(decky_plugin.DECKY_PLUGIN_LOG_DIR) / "std-err.log", "w"
 
 COPYPARTY_PORT = 3923
 ALPHANUM = "abcdefghijklmnopqrstuvwxyz0123456789"
+SCRIPT_PATH = Path(decky_plugin.DECKY_PLUGIN_DIR) / "copyparty-sfx.py"
 
 
 class Plugin:
@@ -70,7 +72,7 @@ class Plugin:
             "-u",
             user,
             "-E",
-            "copyparty-sfx.py",
+            str(SCRIPT_PATH),
             "-p",
             str(COPYPARTY_PORT),
             "-v",
@@ -96,6 +98,7 @@ class Plugin:
         user = Plugin._get_user()
         env["HOME"] = home_dir
         env["USER"] = user
+        #logger.info(f"Using Copyparty script at {SCRIPT_PATH} (exists={SCRIPT_PATH.exists()}) with python {sys.executable}")
         cmd = Plugin._build_command()
         logger.info(f"Starting Copyparty on port {COPYPARTY_PORT}")
         Plugin._proc = subprocess.Popen(
