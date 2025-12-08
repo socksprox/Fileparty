@@ -1,50 +1,80 @@
 import {
-  ButtonItem,
   definePlugin,
-  DialogButton,
-  Menu,
-  MenuItem,
   PanelSection,
   PanelSectionRow,
+  TextField,
   ToggleField,
-  Router,
   ServerAPI,
-  showContextMenu,
   staticClasses,
 } from "decky-frontend-lib";
-import { VFC, useState, useEffect } from "react";
+import { ChangeEvent, VFC, useEffect, useState } from "react";
 import { VscDebugDisconnect } from "react-icons/vsc";
-import logo from "../assets/logo.png";
+
+const DEFAULT_PASSWORD = "ChangeMe!plz";
+
+type StatusResult = {
+  enabled: boolean;
+  password: string;
+  url?: string | null;
+};
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
   const [enabled, setEnabled] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>(DEFAULT_PASSWORD);
+  const [serverUrl, setServerUrl] = useState<string | null>(null);
 
-  const onClick = async (e) => {
-      serverAPI.callPluginMethod('set_enabled', { enabled: e });
+  const refreshStatus = async () => {
+    const status = await serverAPI.callPluginMethod<{}, StatusResult>("get_status", {});
+    const result = status.result as StatusResult;
+    setEnabled(!!result?.enabled);
+    setPassword(result?.password || DEFAULT_PASSWORD);
+    setServerUrl(result?.url ?? null);
   };
 
-  const initState = async () => {
-    const getIsEnabledResponse = await serverAPI.callPluginMethod('is_enabled', {});
-    setEnabled(getIsEnabledResponse.result as boolean);
-  }
+  const onToggle = async (value: boolean) => {
+    setEnabled(value);
+    await serverAPI.callPluginMethod("set_enabled", { enabled: value });
+    await refreshStatus();
+  };
 
-    useEffect(() => {
-            initState();
+  const onPasswordChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setPassword(value);
+    await serverAPI.callPluginMethod("set_password", { password: value });
+    await refreshStatus();
+  };
+
+  useEffect(() => {
+    refreshStatus();
     }, []);
   return (
     <PanelSection>
       <PanelSectionRow>
-      <ToggleField
-              label="Enable"
-              checked={enabled}
-              onChange={(e) => { setEnabled(e); onClick(e); }}
-      />
+        <ToggleField
+          label="Enable Copyparty Server"
+          checked={enabled}
+          onChange={onToggle}
+        />
       </PanelSectionRow>
       <PanelSectionRow>
-        <div>You need to pair it first in desktop mode.</div>
+        <TextField
+          label="Password for user 'deck'"
+          description="Default password is ChangeMe!plz"
+          value={password}
+          onChange={onPasswordChange}
+        />
       </PanelSectionRow>
       <PanelSectionRow>
-        <div>Remember to turn it off when you are not using it!</div>
+        <div>
+          Enable to start copyparty-sfx serving /home/deck with deck user read/write/delete access.
+        </div>
+      </PanelSectionRow>
+      <PanelSectionRow>
+        <div>
+          {enabled && serverUrl
+            ? `Reachable at: ${serverUrl}`
+            : "Enable the server to see the access URL."}
+        </div>
       </PanelSectionRow>
     </PanelSection>
   );
@@ -52,7 +82,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ serverAPI }) => {
 
 export default definePlugin((serverApi: ServerAPI) => {
   return {
-    title: <div className={staticClasses.Title}>Screentshot Aggregator</div>,
+    title: <div className={staticClasses.Title}>Copyparty File Server</div>,
     content: <Content serverAPI={serverApi} />,
     icon: <VscDebugDisconnect />,
     onDismount() {

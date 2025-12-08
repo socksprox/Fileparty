@@ -1,5 +1,5 @@
-# Decky KDE Connect Plugin
-- Pair your device with KDE connect on the Deck in desktop mode
-- Install this plugin
-- Enable
-- Enjoy remote input and volume control, probably also sending files
+# Copyparty File Server for Decky
+- Toggle a bundled Copyparty server from Decky
+- Serves `/home/deck` via copyparty-sfx with a `deck` user (rw/delete)
+- Configure the deck user's password in the UI (defaults to `ChangeMe!plz`)
+- Shows the Deck's LAN URL once the server is running

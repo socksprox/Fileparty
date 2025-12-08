@@ -1,10 +1,10 @@
 {
-  "name": "KDE Connect",
-  "author": "Jariullah Safi",
+  "name": "DeckyParty",
+  "author": "miku",
   "flags": ["debug"],
   "publish": {
-    "tags": ["control"],
-    "description": "A plugin for running KDE Connect in gamemode",
+    "tags": ["control", "files"],
+    "description": "Run copyparty to serve /home/deck with password auth.",
     "image": "https://github.com/safijari/Decky-KDE-Connect/raw/main/kde_screenshot.png"
   }
 }
