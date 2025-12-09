@@ -7,7 +7,7 @@ import {
   staticClasses,
 } from "decky-frontend-lib";
 import { VFC, useEffect, useState } from "react";
-import { FaServer } from "react-icons/fa";
+import { FaFolder } from "react-icons/fa";
 
 type StatusResult = {
   enabled: boolean;
@@ -83,7 +83,7 @@ export default definePlugin((serverApi: ServerAPI) => {
   return {
     title: <div className={staticClasses.Title}>Copyparty File Server</div>,
     content: <Content serverAPI={serverApi} />,
-    icon: <FaServer />,
+    icon: <FaFolder />,
     onDismount() {},
   };
 });
