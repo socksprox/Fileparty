@@ -50,5 +50,14 @@
         "react-dom"
       ]
     }
-  }
+  },
+  "remote_binary_bundling" : true,
+  "remote_binary": 
+  [
+    {
+      "sha256hash":  "e88f0327739c85dcd382048244942c668669cc2dd92db64e1aebf425981f7310",
+      "url":  "https://github.com/9001/copyparty/releases/download/v1.19.21/copyparty-sfx.py",
+      "name":  "copyparty-sfx.py"
+    }
+  ]
 }

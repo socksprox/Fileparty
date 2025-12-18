@@ -5,7 +5,7 @@ import socket
 import subprocess
 import traceback
 from pathlib import Path
-import sys
+#import sys
 
 import decky_plugin
 
@@ -16,7 +16,7 @@ std_err_file = open(Path(decky_plugin.DECKY_PLUGIN_LOG_DIR) / "std-err.log", "w"
 
 COPYPARTY_PORT = 3923
 ALPHANUM = "abcdefghijklmnopqrstuvwxyz0123456789"
-SCRIPT_PATH = Path(decky_plugin.DECKY_PLUGIN_DIR) / "copyparty-sfx.py"
+SCRIPT_PATH = Path(decky_plugin.DECKY_PLUGIN_DIR) / "bin" / "copyparty-sfx.py"
 
 
 class Plugin:
