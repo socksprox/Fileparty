@@ -1,7 +1,7 @@
 {
-  "name": "copyparty-file-server",
-  "version": "0.1.0",
-  "description": "A Decky plugin for running copyparty to manage the deck's filesystem with.",
+  "name": "deckyparty-file-manager",
+  "version": "1.0.0",
+  "description": "Manage the deck's filesystem from a web browser via Copyparty!",
   "scripts": {
     "build": "shx rm -rf dist && rollup -c",
     "watch": "rollup -c -w",
